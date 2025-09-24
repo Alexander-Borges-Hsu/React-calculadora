@@ -1,0 +1,255 @@
+<!-- Este arquivo é um modelo para todos os arquivos html que eu for criar. Servirá para estudos. -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curso Rocketseat</title>
+
+    <!-- Links para a fonte Rubik do google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
+    <!-- Recursos do tailwind css 4 -->
+    <style type="text/tailwindcss">
+        @theme{
+            /* Essa seção é para guardar os tokens ou simplesmente as variáveis de estilização dos componentes */
+            /* Estilo do resultado da calculadora e do histórico de operações */
+            --text: #EBEBEB;
+            /* Estilo para a visualização da ultima operação da calculadora */
+            --text-secondary: #6B6B6B; 
+            /* Estilo roxo para os botões de operação */
+            --primary: #462878;
+            /* Background padrão para a maioria dos componentes */
+            --background: #2D2A37;
+
+            /* Gradiante dos botões */
+            --gradient: 180deg, 
+                rgba(0, 0, 0, 0.05) 0%, 
+                rgba(255, 255, 255, 0.05) 100%;
+            
+            /* Gradiente para mudar o estilo para quando o mouse passar sob o botão */
+            --gradient-hover:  180deg, 
+                rgba(0, 0, 0, 0.1) 0%, 
+                rgba(255, 255, 255, 0.1) 100%;
+
+            /* Variável para a sombra dos botões da calculadora */
+            --shadow: 0px 11px 7px 0px rgba(0, 0, 0, 0.01), 
+                0px 7px 7px 0px rgba(0, 0, 0, 0.04), 
+                0px 4px 6px 0px rgba(0, 0, 0, 0.10), 
+                0px 2px 4px 0px rgba(0, 0, 0, 0.26), 
+                0px 0px 2px 0px rgba(0, 0, 0, 0.29), 
+                0px 2px 3px 0px rgba(255, 255, 255, 0.06) inset;
+
+            /* Fonte do texto do projeto */
+            --font-sans: 'Rubik', sans-serif;
+        }
+    </style>
+</head>
+
+<!-- Alteração diretamente no body para a estilização ser em todo o projeto -->
+<body class="min-h-screen bg-linear-[180deg,_#807ECE_0%,_#8E7ECE_100%] text-(--text) font-(--font-sans)">
+
+    <div id="root" class="">
+        <!-- Div responsável por renderizar a aplicação no react -->
+         
+    </div>
+
+    <!-- Script necessário para a utilização do tailwind para a estilização -->
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <!-- Scripts necessários para rodar o react via CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    
+    <!-- O type desse script  informa ao navegador que o código desse script dever ser lido com Babel
+     para "traduzir" o conteúdo dele para que o navegador entenda.-->
+    <script type="text/babel">
+
+        // Variável para armazenar os padrões de texto do projeto
+        const textVariants = {
+            default: 'text-xl', //Tamanho padrão de 20px
+            muted: 'text-xl text-(--text-secondary)', // Tamanho padrão para a ultima operação da calculadora, leva também um recurso do tailwind que busca a variável em @theme e tráz para essa variável
+            heading: 'text-2xl', //Tamanho para o header do hisórico da calculadora de 24px
+            blast: 'text-3xl' // Tamanho para o texto que exibe o resultado atual do cálculo que é de 36px
+        }
+
+        // Criando o componente de texto
+        // Nos parâmetros o as define que por padrão as tags que vierem sem especificação vão ser do tipo tag
+        // Como o return não tem a capacidade de pegar as variávei e torná-las em tags
+        // utilizei o React.creat.Element para retornar a tag especifica que ela pede
+        // as para criar a tag a partir do parâmetro, children para passar o conteúdo da tag e ...props para passar outros atributos
+        function Text({as = 'span', children, className, variant = 'default', ...props}){
+            return React.createElement(
+                as,
+                {   
+                    // Criação do objeto para ser possível passar mais de um atributo para a tag
+                    className: `${textVariants[variant]} ${className ? className: ''}`,
+                    ...props,
+                },
+                children
+            )
+        }
+        
+        const buttonVariants = {
+            default: 'bg-(--background)',
+            primary: 'bg-(--primary)'
+        }
+
+        // Criação do botão usando o componente Text
+        function Button({className, children, variant = 'default', ...props}){
+            return(
+                <Text as='button' 
+                variant='heading'
+                // Eu defini a largura do botão em w
+                className={`
+                    flex items-center justify-center rounded-xl
+                    p-3 cursor-pointer text-(--text)
+                    bg-linear-(--gradient) hover:bg-linear-(--gradient-hover)
+                    shadow-(--shadow)
+                    w-16
+                    ${buttonVariants[variant]}
+                    ${className ? className: ''}
+                `}
+                {...props}
+                >
+                    {children}
+                </Text>
+            )
+        }
+
+        // Criação do componente card
+        function Card({children, className, ...props}){
+            return(
+                <div className={`
+                    bg-(--background) shadow-(--shadow)
+                    rounded-2xl      
+                    ${className ? className: ''}  
+                `}
+                {...props}
+                >
+                    {children}
+                </div>
+            )
+        }
+
+        // Começo da criaçao da calculadora em si
+        function CalculadoraDisplay({operation, result, className, ...props}){
+            return(
+                <div className={`
+                    flex flex-col gap-2 px-[1.375rem] cursor-default
+                    select-none  
+                `}>
+                    <Text as='div' className='flex items-center justify-end' variant='muted'>{operation}</Text>
+
+                    <div className={`
+                        flex items-center justify-between
+                    `}>
+                        <Text variant='muted'>=</Text>
+                        <Text variant='blast'>{result}</Text>
+                    </div>
+                </div>
+            )
+        }
+
+        function CalculadoraTeclas({children, className, ...props}){
+            return(
+                <div className={`
+                    flex flex-col select-none gap-3     
+                `}>
+                    <div className={`
+                        flex gap-3        
+                    `}>
+                        <Button>CE</Button>   
+                        <Button className="flex-1">C</Button>
+                        <Button variant='primary'>÷</Button>     
+                    </div>
+                    <div className={`
+                        flex gap-3        
+                    `}>
+                        <Button>7</Button>   
+                        <Button>8</Button>
+                        <Button>9</Button>
+                        <Button variant='primary'>×</Button>     
+                    </div>
+                    <div className={`
+                        flex gap-3        
+                    `}>
+                        <Button>4</Button>   
+                        <Button>5</Button>
+                        <Button>6</Button>
+                        <Button variant='primary'>-</Button>     
+                    </div>
+                    <div className={`
+                        flex gap-3        
+                    `}>
+                        <Button>1</Button>   
+                        <Button>2</Button>
+                        <Button>3</Button>
+                        <Button variant='primary'>+</Button>     
+                    </div>
+                    <div className={`
+                        flex gap-3        
+                    `}>
+                        <Button className='flex-1'>0</Button>   
+                        <Button>,</Button>
+                        <Button variant='primary' className='bg-violet-600'>=</Button>     
+                    </div>
+                </div>
+            )
+        }
+
+        function Calculadora({className, ...props}){
+            return(
+                <Card className={`flex flex-col gap-[1.625rem] w-[22.25rem]
+                    pt-14 px-8 pb-8       
+                `}>
+                    <CalculadoraDisplay operation='19-14' result='5'/>
+                    <CalculadoraTeclas />
+                </Card>
+            )
+        }
+
+        function HistoricoOperacoes(){
+            return(
+                <Card className={`
+                    flex-col  py-10 px-8 w-[22.25rem] sm:w-[30.25rem]
+                    h-[32rem] sm:h-[rem]
+
+                `}>
+                    <Text as='h1' variant='heading' className='mb-4'>Histórico de operações</Text>
+                    
+                    <ul className='flex flex-col gap-3'>
+                        <Text as='li'>1+1</Text>
+                        <Text as='li'>1+2</Text>
+                        <Text as='li'>1+2+3</Text>
+                    </ul>
+                </Card>
+            )
+        }
+        
+        // Componente de entrada
+        function App(){
+            return (
+                <main className={`
+                    py-28 px-4 flex 
+                    flex-col sm:flex-row  
+                    items-center sm:items-stretch
+                    gap-6
+                    
+                `}>
+                    <Calculadora/>
+                    <HistoricoOperacoes/>
+                </main>
+            )
+        }
+
+        // Não mexer mais nessa estrutura porque iremos renderizar outros componentes a partir do app
+        ReactDOM.createRoot(document.getElementById("root")).render(
+            <App/>
+        )     
+    </script>
+    
+</body>
+</html>
