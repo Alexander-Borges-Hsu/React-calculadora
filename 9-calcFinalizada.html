@@ -13,7 +13,6 @@
     <!-- Recursos do tailwind css 4 -->
     <style type="text/tailwindcss">
         @theme{
-            /* Essa seção é para guardar os tokens ou simplesmente as variáveis de estilização dos componentes */
             /* Estilo do resultado da calculadora e do histórico de operações */
             --text: #EBEBEB;
             /* Estilo para a visualização da ultima operação da calculadora */
@@ -46,14 +45,9 @@
         }
     </style>
 </head>
-
-<!-- Alteração diretamente no body para a estilização ser em todo o projeto -->
 <body class="min-h-screen bg-linear-[180deg,_#807ECE_0%,_#8E7ECE_100%] text-(--text) font-(--font-sans)">
 
-    <div id="root" class="">
-        <!-- Div responsável por renderizar a aplicação no react -->
-         
-    </div>
+    <div id="root" class=""></div>
 
     <!-- Script necessário para a utilização do tailwind para a estilização -->
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
@@ -62,9 +56,6 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    
-    <!-- O type desse script  informa ao navegador que o código desse script dever ser lido com Babel
-     para "traduzir" o conteúdo dele para que o navegador entenda.-->
     <script type="text/babel">
         // Variável para armazenar os padrões de texto do projeto
         const textVariants = {
@@ -74,9 +65,6 @@
             blast: 'text-3xl' // Tamanho para o texto que exibe o resultado atual do cálculo que é de 36px
         }
 
-        // Criando o componente de texto
-        // Nos parâmetros o as define que por padrão as tags que vierem sem especificação vão ser do tipo tag
-        // Como o return não tem a capacidade de pegar as variávei e torná-las em tags
         // utilizei o React.creat.Element para retornar a tag especifica que ela pede
         // as para criar a tag a partir do parâmetro, children para passar o conteúdo da tag e ...props para passar outros atributos
         function Text({as = 'span', children, className, variant = 'default', ...props}){
@@ -101,7 +89,6 @@
             return(
                 <Text as='button' 
                 variant='heading'
-                // Eu defini a largura do botão em w
                 className={`
                     flex items-center justify-center rounded-xl
                     p-3 cursor-pointer text-(--text)
