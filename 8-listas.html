@@ -12,9 +12,6 @@
          
     </div>
 
-
-    <!-- Script necessário para a utilização do tailwind para a estilização -->
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <!-- Scripts necessários para rodar o react via CDN -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -25,10 +22,32 @@
      para "traduzir" o conteúdo dele para que o navegador entenda.-->
     <script type="text/babel">
 
+        function Listas(){
+            const [nomes] = React.useState(["Alexander", "Alexander", "Felipe", "Nathália", "Sandro", "Jéssica", "Cristine", "João"]);
+
+            const [search, setSearch] = React.useState('');
+
+
+            return(
+                <div>
+                    <input type="text" onChange={e =>setSearch(e.target.value)}/>    
+                    
+                    <ul>
+                        {nomes
+                            .filter(nomes =>
+                                nomes.toLowerCase().includes(search.toLowerCase())
+                            ).map((nome) => <li>{nome}</li>)
+
+                        }
+                    </ul>
+                </div>
+            )
+        }
+
         function App(){
             return (
-                <main class="p-3">
-                    ...    
+                <main class>
+                    <Listas/>    
                 </main>
             )
         }

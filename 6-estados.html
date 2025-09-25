@@ -12,9 +12,6 @@
          
     </div>
 
-
-    <!-- Script necessário para a utilização do tailwind para a estilização -->
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <!-- Scripts necessários para rodar o react via CDN -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -25,10 +22,22 @@
      para "traduzir" o conteúdo dele para que o navegador entenda.-->
     <script type="text/babel">
 
+        function Contador({children, ...props}){
+
+            const [contador, setContador] = React.useState(0);
+            return(
+                <>
+                    <p>Contador: {contador}</p>
+                    <p>{contador < 10 ? 'Menor que 10' : 'Maior ou igual a 10'}</p>
+                    <button type='button' onClick={() => setContador((valorAnterior) => valorAnterior + 1)}>Adicionar + 1</button>
+                </>
+            )
+        }
+
         function App(){
             return (
-                <main class="p-3">
-                    ...    
+                <main>
+                    <Contador/>    
                 </main>
             )
         }
