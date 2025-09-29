@@ -121,8 +121,9 @@
         }
 
         // Começo da criaçao da calculadora em si
-        function CalculadoraDisplay({operation, result, className, ...props}){
-            
+        function CalculadoraDisplay({className, ...props}){
+            const {operation, result} = React.useContext(DadosContext);
+
             return(
                 <div className={`
                     flex flex-col gap-2 px-[1.375rem] cursor-default
@@ -172,7 +173,9 @@
         ]
 
         // Filtragem e listas utilizados
-        function CalculadoraTeclas({funcao, className, ...props}){
+        function CalculadoraTeclas({className, ...props}){
+            const {handleInputClick} = React.useContext(DadosContext);
+
             return(
                 <div className={`
                     flex flex-col select-none gap-3     
@@ -185,7 +188,7 @@
                             <Button 
                                 className={button.className} 
                                 variant={button.variant}
-                                onClick={() => funcao(button.input)}
+                                onClick={() => handleInputClick(button.input)}
                                 >
                                 {button.input}
                             </Button>
@@ -196,18 +199,36 @@
             )
         }
 
-        function Calculadora({funcao, className, ...props}){
+        function useDados(){
             const [operation, setOperation] = React.useState();
             const [result, setResult] = React.useState('');
+            const [dados, setDados] = React.useState([]);
 
+             const historyStorageKey = 'history';
+
+            React.useEffect(() => {
+                const savedHistory = localStorage.getItem(historyStorageKey);
+                setDados(JSON.parse(savedHistory || '[]'));
+            }, []);
+
+            function apagaHistorico(){
+                setDados([])
+                localStorage.clear(historyStorageKey);
+            }
             function handleInputClick(input){
 
                 setResult(`${result}${input}`);
 
                 if(input === '=' && result != ''){
                     setOperation(result);
-                    setResult(Number(eval(result)))
-                    funcao(operation);
+                    setResult(Number(eval(result)));
+
+                    setDados((dadosAtuais) =>{
+                        const hupdateHistoryValue = [...dadosAtuais, result]; 
+                        localStorage.setItem(historyStorageKey, JSON.stringify(hupdateHistoryValue));
+                        return hupdateHistoryValue;
+                        }
+                    )
 
                 }else if(input === 'CE'){
                     setOperation();
@@ -215,42 +236,66 @@
                 }else if(input === 'C'){
                     setResult('');
                 }
-
             }
+            return{
+                result,
+                operation,
+                dados,
+                handleInputClick,
+                apagaHistorico
+            }
+        }
+
+        const DadosContext = React.createContext();
+
+        function DadosProvider({children}){
+            const {result, operation, dados, handleInputClick, apagaHistorico} = useDados();
 
             return(
-                <Card className={`flex flex-col gap-[1.625rem] w-[22.25rem]
-                    pt-14 px-8 pb-8       
-                `}>
-                    <CalculadoraDisplay operation={operation} result={result}/>
-                    <CalculadoraTeclas funcao={handleInputClick}/>
-                </Card>
+                <DadosContext.Provider value={{operation, result, handleInputClick, dados, apagaHistorico}}>
+                    {children}
+                </DadosContext.Provider>
             )
         }
 
-        function HistoricoOperacoes({dados = []}){
+        function Calculadora({className, ...props}){
             return(
-                <Card className={`
-                    flex-col  py-10 px-8 w-[22.25rem] sm:w-[30.25rem]
-                    h-[32rem] sm:h-[rem]
+                <DadosProvider>
+                    <Card className={`flex flex-col gap-[1.625rem] w-[22.25rem]
+                        pt-14 px-8 pb-8       
+                    `}>
 
-                `}>
-                    <Text as='h1' variant='heading' className='mb-4'>Histórico de operações</Text>
-                    
-                    <ul className='flex flex-col gap-3'>
-                        {dados.map((items) => <Text as='li'>{items}</Text>)}
-                    </ul>
-                </Card>
+                        <CalculadoraDisplay/>
+                        <CalculadoraTeclas/>
+                    </Card>
+                    <HistoricoOperacoes/>
+                
+                </DadosProvider>
+                
+            )
+        }
+
+        function HistoricoOperacoes(){
+            const {dados} = React.useContext(DadosContext);
+            const {apagaHistorico} = React.useContext(DadosContext);
+            return(
+                    <Card className={`
+                        flex-col  py-10 px-8 w-[22.25rem] sm:w-[30.25rem]
+                        h-[32rem] sm:h-[rem]
+
+                    `}>
+                        <Text as='h1' variant='heading' className='mb-4'>Histórico de operações</Text>
+                        
+                        <ul className='flex flex-col gap-3'>
+                            {dados.map((items) => <Text as='li'>{items}</Text>)}
+                        </ul>
+                        <Button onClick={() => apagaHistorico()}><Text variant='muted'>Apagar Histórico</Text></Button>
+                    </Card>
             )
         }
 
         // Componente de entrada
-        function App(){
-            const [dados, setDados] = React.useState([]);
-            function historico(atual){
-                setDados((dadosAtuais) => [...dadosAtuais, atual])
-                console.log(dados);
-            }
+        function App(){            
             return (
                 <main className={`
                     py-28 px-4 flex 
@@ -259,8 +304,7 @@
                     gap-6
                     
                 `}>
-                    <Calculadora funcao={historico}/>
-                    <HistoricoOperacoes dados = {dados}/>
+                    <Calculadora/>
                 </main>
             )
         }

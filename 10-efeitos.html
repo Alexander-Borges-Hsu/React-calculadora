@@ -13,6 +13,8 @@
     </div>
 
 
+    <!-- Script necessário para a utilização do tailwind para a estilização -->
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <!-- Scripts necessários para rodar o react via CDN -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -22,50 +24,27 @@
     <!-- O type desse script  informa ao navegador que o código desse script dever ser lido com Babel
      para "traduzir" o conteúdo dele para que o navegador entenda.-->
     <script type="text/babel">
-        function handleAlertClick(event){
-            console.log(event);
-            alert('Alerta');
-        }
+        function Tela(){
 
-        function Alert1(){
+            const [num, setNum] = React.useState(0);
+
+            React.useEffect(() => {
+                console.log('Número atualizado.');
+            }, [num]);
+
             return(
-                <button type='button' onClick={handleAlertClick}>clique</button>
-            )
-        }
-
-        function Alert2(){
-            function handleAlertClick2(msg){
-                alert(msg);
-            }
-            return(
-                <button onClick={() => handleAlertClick2('Alerta novamente')}>clique 2</button>
-            )
-        }
-
-        function Alert3(){
-            function handleAlertClick3(event){
-                console.log(event)
-                alert(event.target.previousSibling.value);
-            }
-
-            function handleInputChange(event) {
-                console.log(event.target.value);
-            }
-            return(
-                <div>
-                    <input type="text" onChange={handleInputChange} />
-                    <button onClick={handleAlertClick3}>Clique de novo novamente</button>    
-                </div>
+                <>
+                    <main class="p-3">
+                        <p>{num}</p>
+                        <button onClick={() => setNum(1 + num)} className='cursor-pointer'>Clicar para ver</button>      
+                    </main>
+                </>
             )
         }
 
         function App(){
             return (
-                <main>
-                    <Alert1/>
-                    <Alert2/>
-                    <Alert3/>
-                </main>
+                <Tela/>
             )
         }
 
