@@ -51,7 +51,7 @@ export default function Button({
     return(
         <button className={buttonVariants({variant, size, disabled, className})} {...props}>
             {icon && <Icon variantIcon={icon} className={buttonIconVariants({variant, size})}/>} 
-            <Text variant={"body-md-bold"}>{children}</Text>
+            {children && <Text variant={"body-md-bold"}>{children}</Text>}
         </button>
     ) 
 }
