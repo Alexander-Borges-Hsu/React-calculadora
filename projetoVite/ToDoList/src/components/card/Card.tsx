@@ -9,7 +9,7 @@ export const cardVariants = cva(
         variants:{
             size:{
                 none: "",
-                md: "p-5"
+                md: "p-5 h-18"
             }
         },
         defaultVariants:{
