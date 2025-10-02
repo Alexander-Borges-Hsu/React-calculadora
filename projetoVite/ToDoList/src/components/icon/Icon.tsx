@@ -36,7 +36,6 @@ interface IconProps extends VariantProps<typeof iconVariants>{
     className?: string;
     variantIcon?: keyof typeof iconSymbol.variant;
     children?: React.ReactNode;
-    animacao?: string;
 }
 
 export default function Icon({children, variantIcon = "Trash", variant, className, ...props}: IconProps){

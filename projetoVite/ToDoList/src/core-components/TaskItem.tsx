@@ -5,39 +5,89 @@ import InputCheckBox from "../components/input/InputCheckBox";
 import Text from "../components/text/Text"
 import InputText from "../components/input/InputText";
 import Container from "../components/container/Container";
+import { TaskState, type Task } from "../models/task";
+import { cx } from "class-variance-authority";
+import useTask from "../hooks/use-task";
+import Skeleton from "../components/skeleton/Skeleton";
 
-export default function TaskItem(){
-    const [isEditing, setIsEditting] = React.useState(false); 
+interface TaksItemProps{
+    task: Task;
+    loading?: boolean;
+}
+
+export default function TaskItem({task, loading}: TaksItemProps){
+    const [isEditing, setIsEditting] = React.useState(task.state === TaskState.Creating); 
+    const [taskTitle, setTaskTitle] = React.useState(task.title || "");
+    const {updateTask, updateTaskStatus, deleteTask, isUpdatingTask, isDeletingTask} = useTask();
 
     function handleEditTask(){
         setIsEditting(true);
     }
 
     function handleExitTask(){
+        if(task.state === TaskState.Creating){
+            deleteTask(task.id);
+        }
+        
         setIsEditting(false);
     }
 
-    return(
-        <Card size={"md"} className="flex items-center gap-4 ">
-            {isEditing == false ? 
-                <>
-                    <InputCheckBox/>
-                    <Text className="flex-1">Fazer compras da semana</Text>
-                    <Container className="flex gap-1">
-                        <ButtonIcon icon="Trash" variant={"tertiary"}/>
-                        <ButtonIcon icon="Pencil" onClick={() => handleEditTask()} variant={"tertiary"}/>
-                    </Container>
-                </> 
-                :
-                <>
-                    <InputText className="flex-1"/>
-                    <Container className="flex gap-1">
-                        <ButtonIcon icon="Xregular" variant={"secondary"} onClick={() => handleExitTask()}/>
-                        <ButtonIcon icon="Check" variant={"primary"}/>
-                    </Container>
-                </>
+    function handleChangeTaskTitle(e: React.ChangeEvent<HTMLInputElement>){
+        setTaskTitle(e.target.value || "");
+    }
 
-            }       
-        </Card>
+    async function handleSaveTask(e: React.FormEvent<HTMLFormElement>){
+        e.preventDefault();
+        await updateTask(task.id, {title: taskTitle})
+        setIsEditting(false);
+    }
+
+    function handleChangeTaskStatus(e: React.ChangeEvent<HTMLInputElement>){
+        const checked = e.target.checked;
+        updateTaskStatus(task.id, checked);
+    }
+
+    async function handleClickDeletTask(){
+        await deleteTask(task.id);
+    }
+
+
+    return(
+        <form onSubmit={handleSaveTask}>
+            <Card size={"md"} className="flex items-center gap-4 ">
+                {isEditing == false ? 
+                    <>
+                        <InputCheckBox 
+                            value={task.conclued?.toString()} 
+                            checked={task?.conclued}
+                            onChange={handleChangeTaskStatus}    
+                            loading={loading}
+                        />
+                        {!loading ?
+                            <Text className={cx("flex-1",{
+                                "line-through": task?.conclued,
+                            })}>{task?.title}</Text>
+                        :
+                            <>
+                                <Skeleton className="flex-1 h-6"/>
+                            </>
+                        }
+                        <Container className="flex gap-1">
+                            <ButtonIcon handling={isDeletingTask} loading={loading} type="button" icon="Trash" onClick={handleClickDeletTask} variant={"tertiary"}/>
+                            <ButtonIcon loading={loading} type="button" icon="Pencil" onClick={() => handleEditTask()} variant={"tertiary"}/>
+                        </Container>
+                    </> 
+                    :
+                    <>
+                        <InputText value={taskTitle} className="flex-1" onChange={handleChangeTaskTitle} required autoFocus/>
+                        <Container className="flex gap-1">
+                            <ButtonIcon type="button" icon="Xregular" variant={"secondary"} onClick={() => handleExitTask()}/>
+                            <ButtonIcon handling={isUpdatingTask} type="submit" icon="Check" variant={"primary"}/>
+                        </Container>
+                    </>
+
+                }       
+            </Card>
+        </form>
     )
 }

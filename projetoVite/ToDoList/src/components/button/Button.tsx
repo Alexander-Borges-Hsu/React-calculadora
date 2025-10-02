@@ -14,12 +14,16 @@ export const buttonVariants = cva("flex items-center justify-center cursor-point
         },
         disabled:{
             true: "opacity-50 pointer-events-none"
+        },
+        handling:{
+            true: "pointer-events-none"
         }
     },
     defaultVariants: {
         variant: "primary",
         size: "md",
-        disabled: false
+        disabled: false,
+        handling: false
     }
 });
 
@@ -41,16 +45,18 @@ export const buttonIconVariants = cva("transition", {
 interface ButtonProps extends Omit<React.ComponentProps<"button">, 'size' | 'disabled'>, VariantProps<typeof buttonVariants>{
     children ?: React.ReactNode;
     icon ?: React.ComponentProps<typeof typeIcon>["variantIcon"];
+    handling?: boolean;
 }
 
 export default function Button({
     variant, size, 
     disabled, children, 
-    className, icon, ...props
+    className, icon,
+    handling, ...props
 }: ButtonProps){
     return(
-        <button className={buttonVariants({variant, size, disabled, className})} {...props}>
-            {icon && <Icon variantIcon={icon} className={buttonIconVariants({variant, size})}/>} 
+        <button className={buttonVariants({variant, size, disabled, handling, className})} {...props}>
+            {icon && <Icon variantIcon={handling ? "Spinner" : icon} className={buttonIconVariants({variant, size})}/>} 
             {children && <Text variant={"body-md-bold"}>{children}</Text>}
         </button>
     ) 

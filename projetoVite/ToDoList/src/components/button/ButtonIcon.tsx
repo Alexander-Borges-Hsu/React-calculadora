@@ -34,24 +34,30 @@ export const buttonIconVariants = cva("inline-flex items-center justify-center c
         },
         disabled: {
             true: "opacity-50 pointer-events-none"
+        },
+        handling: {
+            true: "pointer-events-none"
         }
     },
     defaultVariants: {
         variant: "primary",
         size: "sm",
-        disabled: false
+        disabled: false,
+        handling: false
     }
 });
 
 interface ButtonIconProps extends Omit<React.ComponentProps<"button">, 'size' | 'disabled'>, VariantProps<typeof buttonIconVariants>{
     icon ?: React.ComponentProps<typeof typeIcon>["variantIcon"];
     loading?: boolean;
+    handling?: boolean;
 }
 
 export default function ButtonIcon({
     variant, size, 
     disabled, className, 
-    icon, loading, ...props
+    icon, loading, 
+    handling, ...props
 }: ButtonIconProps){
     if(loading){
         return(
@@ -63,11 +69,13 @@ export default function ButtonIcon({
             variant,
             size,
             disabled,
-            className
+            className,
+            handling
         })}
         {...props}
         >
-            <Icon variantIcon={icon} className={buttonIconIconVariants({variant, size})}/>
+            <Icon variantIcon={handling ? "Spinner" : icon} 
+            className={buttonIconIconVariants({variant, size})}/>
         </button>
     ) 
 }
